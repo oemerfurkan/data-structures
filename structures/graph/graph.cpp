@@ -2,10 +2,12 @@
 #include <iostream>
 #include <random>
 #include <SFML/Graphics.hpp>
+#include <string>
 
+const std::string font_path = "/System/Library/Fonts/Avenir.ttc";
 using namespace graph_impl;
 
-Graph* Graph::create()
+Graph *Graph::create()
 {
     Graph *graph = new Graph();
     graph->node_count = 0;
@@ -76,27 +78,60 @@ void Graph::print_graph()
 
 void Graph::render_graph()
 {
-sf::RenderWindow window(sf::VideoMode({800, 600}), "My window");
-
-while (window.isOpen())
-{
-    while (const std::optional event = window.pollEvent())
-    {
-        if (event->is<sf::Event::Closed>())
-            window.close();
-    }
+    sf::RenderWindow window(sf::VideoMode({800, 600}), "Graph");
 
     window.clear(sf::Color::White);
 
+    //TODO: Prevent double rendering of edges
     for (int i = 0; i < nodes.size(); i++)
     {
-        srand(time(0));
-        sf::CircleShape circle(10);
+        // Draw every node around a circular shape
+        float angle = 2 * 3.14159 / nodes.size() * i;
+        float x = 400 + 200 * cos(angle);
+        float y = 300 + 200 * sin(angle);
+        sf::CircleShape circle(20);
         circle.setFillColor(sf::Color(255, 0, 0));
-        circle.setPosition(sf::Vector2f(100 * i, 100 * i));
+        circle.setPosition(sf::Vector2f(x, y));
+
+        sf::Font font(font_path);
+        sf::Text text(font);
+        text.setString(std::to_string(nodes[i].id));
+        text.setCharacterSize(18);
+        text.setFillColor(sf::Color::White);
+        text.setPosition(sf::Vector2f(x + 10, y + 5));
+
+        // Draw edges between nodes
+        for (int j = 0; j < nodes[i].neighbors.size(); j++)
+        {
+
+            std::cout << "Node " << nodes[i].id << " has neighbor " << nodes[i].neighbors[j].id << std::endl;
+            // Calculate the length of the edge
+            float neighbor_angle = 2 * 3.14159 / nodes.size() * nodes[i].neighbors[j].id;
+            float neighbor_x = 400 + 200 * cos(neighbor_angle);
+            float neighbor_y = 300 + 200 * sin(neighbor_angle);
+
+            float length = sqrt(pow(neighbor_x - x, 2) + pow(neighbor_y - y, 2));
+            sf::RectangleShape line({length, 1.0f});
+
+            float angle = atan2(neighbor_y - y, neighbor_x - x);
+            line.setRotation(sf::degrees(angle * 180 / 3.14159));
+
+            line.setFillColor(sf::Color::Black);
+            line.setPosition(sf::Vector2f(x + 20, y + 20));
+            window.draw(line);
+        }
+
         window.draw(circle);
+        window.draw(text);
     }
 
     window.display();
-}
+    while (window.isOpen())
+    {
+        while (const std::optional event = window.pollEvent())
+        {
+            if (event->is<sf::Event::Closed>())
+                window.close();
+        }
+    }
 }
