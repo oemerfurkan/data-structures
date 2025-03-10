@@ -82,7 +82,7 @@ void Graph::render_graph()
 
     window.clear(sf::Color::White);
 
-    //TODO: Prevent double rendering of edges
+    std::vector<std::array<int, 2>> rendered_edges;
     for (int i = 0; i < nodes.size(); i++)
     {
         // Draw every node around a circular shape
@@ -103,7 +103,20 @@ void Graph::render_graph()
         // Draw edges between nodes
         for (int j = 0; j < nodes[i].neighbors.size(); j++)
         {
-
+            bool is_rendered = false;
+            for (int k = 0; k < rendered_edges.size(); k++)
+            {
+                std::cout << "Checking if edge " << nodes[i].id << " " << nodes[i].neighbors[j].id << " is rendered" << std::endl;
+                if (rendered_edges[k][0] == nodes[i].id && rendered_edges[k][1] == nodes[i].neighbors[j].id)
+                {
+                    is_rendered = true;
+                }
+            }
+            if (is_rendered)
+            {
+                continue;
+            }
+            rendered_edges.push_back({nodes[i].neighbors[j].id, nodes[i].id});
             std::cout << "Node " << nodes[i].id << " has neighbor " << nodes[i].neighbors[j].id << std::endl;
             // Calculate the length of the edge
             float neighbor_angle = 2 * 3.14159 / nodes.size() * nodes[i].neighbors[j].id;
