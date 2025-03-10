@@ -5,23 +5,23 @@
 
 namespace directed_graph_impl
 {
-    class DirectedGraphNode
+    class GraphNode
     {
     public:
         int id;
-        std::vector<DirectedGraphNode> neighbors;
+        std::vector<GraphNode> neighbors;
     };
 
     class DirectedGraph
     {
     public:
         int node_count;
-        std::vector<DirectedGraphNode> nodes;
+        std::vector<GraphNode> nodes;
         DirectedGraph *create();
-        DirectedGraphNode *add_node();
-        DirectedGraphNode *delete_node(DirectedGraphNode *);
-        DirectedGraphNode *add_edge(DirectedGraphNode *node1, DirectedGraphNode *node2, int weight);
-        DirectedGraphNode *delete_edge(DirectedGraphNode *node1, DirectedGraphNode *node2);
+        GraphNode *add_node();
+        GraphNode *delete_node(GraphNode *);
+        GraphNode *add_edge(GraphNode *node1, GraphNode *node2, int weight);
+        GraphNode *delete_edge(GraphNode *node1, GraphNode *node2);
         void print_graph();
         void render_graph();
     };
